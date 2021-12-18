@@ -559,12 +559,12 @@ pixelL1 = pixelL1[[1,2,0]]
 pixelL2 = pixelL2[[1,2,0]]
 
 #Sentinel
-pixelC1_150811, pixelNamesS = imtopy('C:/Users/gerez/Desktop/Testes artigo/Cantareira1/Sentinel_2015_08_11/')
-pixelC2_150811, pixelNamesS = imtopy('C:/Users/gerez/Desktop/Testes artigo/Cantareira2/Sentinel_2015_08_11/')
-pixelC2_160108, pixelNamesS = imtopy('C:/Users/gerez/Desktop/Testes artigo/Cantareira2/Sentinel_2016_01_08/')
-pixelC1_161223, pixelNamesS = imtopy('C:/Users/gerez/Desktop/Testes artigo/Cantareira1/Sentinel_2016_12_23/')
-pixelC2_161223, pixelNamesS = imtopy('C:/Users/gerez/Desktop/Testes artigo/Cantareira2/Sentinel_2016_12_23/')
-pixelC2_180122, pixelNamesS = imtopy('C:/Users/gerez/Desktop/Testes artigo/Cantareira2/Sentinel_2018_01_22/')
+pixelC1_150811, pixelNamesS = imtopy(pathMain + '/Cantareira1/Sentinel_2015_08_11/')
+pixelC2_150811, pixelNamesS = imtopy(pathMain + '/Cantareira2/Sentinel_2015_08_11/')
+pixelC2_160108, pixelNamesS = imtopy(pathMain + '/Cantareira2/Sentinel_2016_01_08/')
+pixelC1_161223, pixelNamesS = imtopy(pathMain + '/Cantareira1/Sentinel_2016_12_23/')
+pixelC2_161223, pixelNamesS = imtopy(pathMain + '/Cantareira2/Sentinel_2016_12_23/')
+pixelC2_180122, pixelNamesS = imtopy(pathMain + '/Cantareira2/Sentinel_2018_01_22/')
 
 #vegetation indices
 names_VIS = np.array(['SAVI', 'EVI', 'IRECI', 'S2REP']) #names
@@ -1248,6 +1248,7 @@ top = joint[:,arg3]
 me1 = (bot[1]-bot[0]).mean(); mae1 = func_mae(bot[1],bot[0])
 me2 = (mid[1]-mid[0]).mean(); mae2 = func_mae(mid[1],mid[0])
 me3 = (top[1]-top[0]).mean(); mae3 = func_mae(top[1],top[0])
+print(mae1);print(mae2);print(mae3)
 
 # plot mae
 plt.bar(['low','mid','high'],[mae1,mae2,mae3])
