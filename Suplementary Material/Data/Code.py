@@ -1248,7 +1248,8 @@ top = joint[:,arg3]
 me1 = (bot[1]-bot[0]).mean(); mae1 = func_mae(bot[1],bot[0])
 me2 = (mid[1]-mid[0]).mean(); mae2 = func_mae(mid[1],mid[0])
 me3 = (top[1]-top[0]).mean(); mae3 = func_mae(top[1],top[0])
-print(mae1);print(mae2);print(mae3)
+# print(me1);print(me2);print(me3)
+# print(mae1);print(mae2);print(mae3)
 
 # plot mae
 plt.bar(['low','mid','high'],[mae1,mae2,mae3])
