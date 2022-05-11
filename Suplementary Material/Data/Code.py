@@ -1,6 +1,6 @@
 # intended for use in anaconda - spyder ide
 # click "run file" (or press F5) once
-# proceed to line 625
+# proceed to line 520
 
 ##########
 # import #
@@ -49,7 +49,7 @@ def imtopy(path):
     return np.array(image), np.array(names)
 
 #multiple scatter plots with r (Spearman)
-def multiplot(dx, dy, nx, ny, titulo = 'plots'):
+def multiplot(dx, dy, nx, ny, titulo = 'plots', path = ''):
     # matriz 2x2 de gráficos
     fig, ax = plt.subplots(nrows=dy.shape[0], ncols=dx.shape[0], figsize=(dx.shape[0]*2,dy.shape[0]*2), gridspec_kw={'hspace': 0, 'wspace': 0})
     fig.suptitle(titulo, fontsize = 32)
@@ -79,11 +79,12 @@ def multiplot(dx, dy, nx, ny, titulo = 'plots'):
             ax[n2,n1].text(0.6,0.8,str(abs(round(spearmanr(x,y)[0],2))), fontsize=16, transform = ax[n2,n1].transAxes)
             n2 += 1
         n1 += 1
-    plt.savefig('C:/Users/gerez/Desktop/' + titulo + '.png', dpi=300) #uncomment this and change the path to save files
+    if path != '':
+        plt.savefig(path + titulo + '.png', dpi=300) #uncomment this and change the path to save files
     plt.show()
 
 #multiple scatter plots with r2 (OLS)
-def multiplotOLS(dx, dy, nx, ny, titulo = 'plots'):
+def multiplotOLS(dx, dy, nx, ny, titulo = 'plots', size = 2, path = ''):
     # matriz 2x2 de gráficos
     fig, ax = plt.subplots(nrows=dy.shape[0], ncols=dx.shape[0], figsize=(dx.shape[0]*2,dy.shape[0]*2), gridspec_kw={'hspace': 0, 'wspace': 0})
     n1 = 0
@@ -95,7 +96,7 @@ def multiplotOLS(dx, dy, nx, ny, titulo = 'plots'):
             fitted = model.fit()
             x_pred = np.linspace(x.min(), x.max(), 2)
             y_pred = fitted.predict(sm.add_constant(x_pred))
-            ax[n2,n1].plot(x, y, 'ro', ms = 2)
+            ax[n2,n1].plot(x, y, 'ro', ms = size)
             ax[n2,n1].plot(x_pred, y_pred, 'b-', lw = 2)
             #labels
             ax[0,n1].set_title(nx[n1],fontsize = 16)
@@ -117,7 +118,8 @@ def multiplotOLS(dx, dy, nx, ny, titulo = 'plots'):
             ax[n2,n1].text(np.min(x)+rangex*0.65,np.min(y)+rangey*0.85,str(abs(round(fitted.rsquared_adj,2))), fontsize=16)
             n2 += 1
         n1 += 1
-    # plt.savefig('C:/Users/gerez/Desktop/temp.png', dpi=300) #uncomment this and change the path to save files
+    if path != '':
+        plt.savefig(path + titulo + '.png', dpi=300) #uncomment this and change the path to save files
     plt.show()
 
 #plotar r correlação
@@ -172,50 +174,7 @@ def NormDif(sentinel, nome):
         n1 += 1
     return np.array(NDs),np.array(nomesNDs) 
 
-#plot simple ratio r values
-def plotSRr(D1, D2, N1, N2, cor = 'cubehelix', valores = True, vmin = -0.7, vmax = 0.7, nome = 'temp'):
-    n1 = 0
-    for L in D2:
-        G = []
-        n2 = 0
-        for B in D1:
-            G.append([])
-            for A in D1:
-                G[n2].append(round(spearmanr(B/A,L)[0], 2))
-            n2 += 1
-        mask = np.zeros_like(G)
-        mask[np.triu_indices_from(mask)] = True
-        with sns.axes_style("white"):
-            sns.set_context("notebook", font_scale=1.0, rc={"lines.linewidth": 2.5})
-            # ax0 = plt.figure().add_axes([1,1,np.size(N2)*0.14,np.size(N2)*0.12])
-            plt.title(str(N2[n1]) + ' vs Simple Ratios r (Spearman)')
-            sns.heatmap(G, cmap = cor, xticklabels = N1, yticklabels = N1, annot=valores, square =False, mask = mask, vmin = vmin, vmax = vmax)
-            # plt.savefig('C:/Users/gerez/Desktop/' + nome + str(N2[n1]) + ' vs Simple Ratios r (Spearman)'  + '.png', dpi=300) #uncomment this and change the path to save files
-            plt.show()
-        n1 += 1
-
-#plot normalized differences r values
-def plotNDr(D1, D2, N1, N2, cor = 'cubehelix', valores = True, vmin = -0.7, vmax = 0.7, nome = 'temp'):
-    n1 = 0
-    for L in D2:
-        G = []
-        n2 = 0
-        for B in D1:
-            G.append([])
-            for A in D1:
-                G[n2].append(abs(round(spearmanr((A-B)/(A+B),L)[0], 2)))
-            n2 += 1
-        mask = np.zeros_like(G)
-        mask[np.triu_indices_from(mask)] = True
-        with sns.axes_style("white"):
-            sns.set_context("notebook", font_scale=1.0, rc={"lines.linewidth": 2.5})
-            plt.title(str(N2[n1]) + ' vs Normalized Differences r (Spearman)')
-            sns.heatmap(G, cmap = cor, xticklabels = N1, yticklabels = N1, annot=valores, square =False, mask = mask, vmin = vmin, vmax = vmax)
-            # plt.savefig('C:/Users/gerez/Desktop/' + nome + str(N2[n1]) + ' vs Normalized Differences r (Spearman)'  + '.png', dpi=300) #uncomment this and change the path to save files
-            plt.show()
-        n1 += 1
-
-def plotSRr2(D1, D2, N1, N2, cor = 'gray', valores = True, vmin = 0, vmax = 0.5, nome = 'temp'):
+def plotSRr2(D1, D2, N1, N2, cor = 'gray', valores = True, vmin = 0, vmax = 0.5, nome = 'temp', path = ''):
     n1 = 0
     for L in D2:
         G = []
@@ -234,11 +193,12 @@ def plotSRr2(D1, D2, N1, N2, cor = 'gray', valores = True, vmin = 0, vmax = 0.5,
             sns.set_context("notebook", font_scale=1.0, rc={"lines.linewidth": 2.5})
             plt.title(str(N2[n1]) + ' vs Simple Ratios r2 (OLS)')
             sns.heatmap(G, cmap = cor, xticklabels = N1, yticklabels = N1, annot=valores, square =False, mask = mask, vmin = vmin, vmax = vmax)
-            plt.savefig('C:/Users/gerez/Desktop/' + nome + str(N2[n1]) + ' vs Simple Ratios (r2 - OLS)'  + '.png', dpi=300) #uncomment this and change the path to save files
+            if path != '':
+                plt.savefig(path + nome + str(N2[n1]) + ' vs Simple Ratios (r2 - OLS)'  + '.png', dpi=300)
             plt.show()
         n1 += 1
 
-def plotNDr2(D1, D2, N1, N2, cor = 'gray', valores = True, vmin = 0, vmax = 0.5, nome = 'temp'):
+def plotNDr2(D1, D2, N1, N2, cor = 'gray', valores = True, vmin = 0, vmax = 0.5, nome = 'temp', path = ''):
     n1 = 0
     for L in D2:
         G = []
@@ -257,7 +217,8 @@ def plotNDr2(D1, D2, N1, N2, cor = 'gray', valores = True, vmin = 0, vmax = 0.5,
             sns.set_context("notebook", font_scale=1.0, rc={"lines.linewidth": 2.5})
             plt.title(str(N2[n1]) + ' vs Normalized Differences r2 (OLS)')
             sns.heatmap(G, cmap = cor, xticklabels = N1, yticklabels = N1, annot=valores, square =False, mask = mask, vmin = vmin, vmax = vmax)
-            # plt.savefig('C:/Users/gerez/Desktop/' + nome + str(N2[n1]) + ' vs Normalized Differences (r2 - OLS)'  + '.png', dpi=300) #uncomment this and change the path to save files
+            if path != '':
+                plt.savefig(path + nome + str(N2[n1]) + ' vs Normalized Differences (r2 - OLS)'  + '.png', dpi=300)
             plt.show()
         n1 += 1
 
@@ -443,12 +404,7 @@ def printImp(mod,name,res_n):
 #File paths
 pathMain = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/')
 pathL = pathMain + "/Lidar.csv" #LiDAR data
-pathLW = pathMain + "/Lidar_weight.csv" #LiDAR data
 pathField = pathMain + "/Field.csv" #Field data
-pathC150811 = pathMain + "/C150811.csv" #Sentinel for LiDAR
-pathC160108 = pathMain + "/C160108.csv" #Sentinel for LiDAR
-pathC161223 = pathMain + "/C161223.csv" #Sentinel for LiDAR
-pathC180122 = pathMain + "/C180122.csv" #Sentinel for LiDAR
 pathSentinel = pathMain + "/SentinelField.csv" #Sentinel for Field
 pathSerie1 = pathMain + "/Serie1.csv" #time series
 pathSerie2 = pathMain + "/Serie2.csv" #time series
@@ -459,79 +415,10 @@ Serie1, SerieN1 = impcsv(pathSerie1)
 Serie2, SerieN2 = impcsv(pathSerie2)
 Serie, SerieN = impcsv(pathSerie)
 
-#Sentinel L2A
-C_150811, SN = impcsv(pathC150811) #Both areas and band names
-C1_150811 = impcsv(pathC150811,1)[0] #Cantareira 1
-C2_150811 = impcsv(pathC150811,2)[0] #Cantareira 2
-C2_160108 = impcsv(pathC160108,2)[0] #Cantareira 2
-C_161223 = impcsv(pathC161223)[0] #Both areas
-C1_161223 = impcsv(pathC161223,1)[0] #Cantareira 1
-C2_161223 = impcsv(pathC161223,2)[0] #Cantareira 2
-C2_180122 = impcsv(pathC180122,2)[0] #clouds in cantareira 1
-
-
-#LiDAR variables
+#LiDAR variables time series
 LT = impcsv(pathL)[0] #Both areas
 L1, LN = impcsv(pathL,1) #Cantareira 1
 L2 = impcsv(pathL,2)[0] #Cantareira 2
-#LN = ['Altura mínima','Altura máxima 10','Altura máxima 5','Altura média','Altura relativa','Altura stdev','Cobertura 10','Cobertura 1','Cobertura 5','Cobertura relativa','Densidade','Ecos','Profundidade']
-
-
-#LiDAR variables with weight
-LT = impcsv(pathLW)[0] #Both areas
-L1, LN = impcsv(pathLW,1) #Cantareira 1
-L2 = impcsv(pathLW,2)[0] #Cantareira 2
-#LN = ['Altura mínima','Altura máxima 10','Altura máxima 5','Altura média','Altura relativa','Altura stdev','Cobertura 10','Cobertura 1','Cobertura 5','Cobertura relativa','Densidade','Ecos','Profundidade']
-
-#vegetation indices
-names_VIS = np.array(['SAVI', 'EVI', 'IRECI', 'S2REP']) #names
-C1_150811_VIS = np.array([SAVI(C1_150811[2],C1_150811[6]),EVI(C1_150811[0],C1_150811[2],C1_150811[6]),IRECI(C1_150811[2],C1_150811[3],C1_150811[4],C1_150811[5]),S2REP(C1_150811[2],C1_150811[3],C1_150811[4],C1_150811[5])])
-C2_150811_VIS = np.array([SAVI(C2_150811[2],C2_150811[6]),EVI(C2_150811[0],C2_150811[2],C2_150811[6]),IRECI(C2_150811[2],C2_150811[3],C2_150811[4],C2_150811[5]),S2REP(C2_150811[2],C2_150811[3],C2_150811[4],C2_150811[5])])
-C2_160108_VIS = np.array([SAVI(C2_160108[2],C2_160108[6]),EVI(C2_160108[0],C2_160108[2],C2_160108[6]),IRECI(C2_160108[2],C2_160108[3],C2_160108[4],C2_160108[5]),S2REP(C2_160108[2],C2_160108[3],C2_160108[4],C2_160108[5])])
-C1_161223_VIS = np.array([SAVI(C1_161223[2],C1_161223[6]),EVI(C1_161223[0],C1_161223[2],C1_161223[6]),IRECI(C1_161223[2],C1_161223[3],C1_161223[4],C1_161223[5]),S2REP(C1_161223[2],C1_161223[3],C1_161223[4],C1_161223[5])])
-C2_161223_VIS = np.array([SAVI(C2_161223[2],C2_161223[6]),EVI(C2_161223[0],C2_161223[2],C2_161223[6]),IRECI(C2_161223[2],C2_161223[3],C2_161223[4],C2_161223[5]),S2REP(C2_161223[2],C2_161223[3],C2_161223[4],C2_161223[5])])
-C2_180122_VIS = np.array([SAVI(C2_180122[2],C2_180122[6]),EVI(C2_180122[0],C2_180122[2],C2_180122[6]),IRECI(C2_180122[2],C2_180122[3],C2_180122[4],C2_180122[5]),S2REP(C2_180122[2],C2_180122[3],C2_180122[4],C2_180122[5])])
-
-C1_150811_SR, names_SR = SimpRat(C1_150811, SN)
-C2_150811_SR = SimpRat(C2_150811, SN)[0]
-C2_160108_SR = SimpRat(C2_160108, SN)[0]
-C1_161223_SR = SimpRat(C1_161223, SN)[0]
-C2_161223_SR = SimpRat(C2_161223, SN)[0]
-C2_180122_SR = SimpRat(C2_180122, SN)[0]
-
-C1_150811_ND, names_ND = NormDif(C1_150811, SN)
-C2_150811_ND = NormDif(C2_150811, SN)[0]
-C2_160108_ND = NormDif(C2_160108, SN)[0]
-C1_161223_ND = NormDif(C1_161223, SN)[0]
-C2_161223_ND = NormDif(C2_161223, SN)[0]
-C2_180122_ND = NormDif(C2_180122, SN)[0]
-
-#main VIs + bands 
-names_BVIS = np.hstack([SN,names_VIS])
-C1_150811_BVIS = np.vstack([C1_150811,C1_150811_VIS])
-C2_150811_BVIS = np.vstack([C2_150811,C2_150811_VIS])
-C2_160108_BVIS = np.vstack([C2_160108,C2_160108_VIS])
-C1_161223_BVIS = np.vstack([C1_161223,C1_161223_VIS])
-C2_161223_BVIS = np.vstack([C2_161223,C2_161223_VIS])
-C2_180122_BVIS = np.vstack([C2_180122,C2_180122_VIS])
-
-#ND and SR
-names_NDSR = np.hstack([names_SR,names_ND])
-C1_150811_NDSR = np.vstack([C1_150811_SR,C1_150811_ND])
-C2_150811_NDSR = np.vstack([C2_150811_SR,C2_150811_ND])
-C2_160108_NDSR = np.vstack([C2_160108_SR,C2_160108_ND])
-C1_161223_NDSR = np.vstack([C1_161223_SR,C1_161223_ND])
-C2_161223_NDSR = np.vstack([C2_161223_SR,C2_161223_ND])
-C2_180122_NDSR = np.vstack([C2_180122_SR,C2_180122_ND])
-
-#all variables
-names_All = np.hstack([SN,names_VIS,names_SR,names_ND])
-C1_150811_All = np.vstack([C1_150811,C1_150811_VIS,C1_150811_SR,C1_150811_ND])
-C2_150811_All = np.vstack([C2_150811,C2_150811_VIS,C2_150811_SR,C2_150811_ND])
-C2_160108_All = np.vstack([C2_160108,C2_160108_VIS,C2_160108_SR,C2_160108_ND])
-C1_161223_All = np.vstack([C1_161223,C1_161223_VIS,C1_161223_SR,C1_161223_ND])
-C2_161223_All = np.vstack([C2_161223,C2_161223_VIS,C2_161223_SR,C2_161223_ND])
-C2_180122_All = np.vstack([C2_180122,C2_180122_VIS,C2_180122_SR,C2_180122_ND])
 
 ###################
 # Field variables
@@ -550,20 +437,26 @@ indicesField = np.array([SAVI(Sentinel[2],Sentinel[6]),EVI(Sentinel[0],Sentinel[
 
 #Import images to python for per pixel analysis
 
+#better names for bands
+SN = np.array(['B2','B3','B4', 'B5', 'B6', 'B7', 'B8A', 'B11', 'B12'])
+
 #LiDAR
 pixelL1, pixelNamesL = imtopy(pathMain + "/Cantareira1/LiDAR/")
 pixelL2, pixelNamesL = imtopy(pathMain + "/Cantareira2/LiDAR/")
 
-pixelNamesL = pixelNamesL[[1,2,0]]
-pixelL1 = pixelL1[[1,2,0]]
-pixelL2 = pixelL2[[1,2,0]]
+LN = pixelNamesL[[1,2,3,0]]
+pixelL1 = pixelL1[[1,2,3,0]]
+pixelL2 = pixelL2[[1,2,3,0]]
+pixelLT = np.concatenate((pixelL1,pixelL2),axis=1)
 
 #Sentinel
 pixelC1_150811, pixelNamesS = imtopy(pathMain + '/Cantareira1/Sentinel_2015_08_11/')
 pixelC2_150811, pixelNamesS = imtopy(pathMain + '/Cantareira2/Sentinel_2015_08_11/')
+pixelCT_150811 = np.concatenate((pixelC1_150811,pixelC2_150811),axis=1)
 pixelC2_160108, pixelNamesS = imtopy(pathMain + '/Cantareira2/Sentinel_2016_01_08/')
 pixelC1_161223, pixelNamesS = imtopy(pathMain + '/Cantareira1/Sentinel_2016_12_23/')
 pixelC2_161223, pixelNamesS = imtopy(pathMain + '/Cantareira2/Sentinel_2016_12_23/')
+pixelCT_161223 = np.concatenate((pixelC1_161223,pixelC2_161223),axis=1)
 pixelC2_180122, pixelNamesS = imtopy(pathMain + '/Cantareira2/Sentinel_2018_01_22/')
 
 #vegetation indices
@@ -616,16 +509,15 @@ pixelC1_161223_All = np.vstack([pixelC1_161223,pixelC1_161223_VIS,pixelC1_161223
 pixelC2_161223_All = np.vstack([pixelC2_161223,pixelC2_161223_VIS,pixelC2_161223_SR,pixelC2_161223_ND])
 pixelC2_180122_All = np.vstack([pixelC2_180122,pixelC2_180122_VIS,pixelC2_180122_SR,pixelC2_180122_ND])
 
-
 # Stop
-raise Exception("Data successfully loaded. Go to line 625.")
+raise Exception("Data successfully loaded. Go to line 520.")
 
 
 #################################################
 ############ RUN IN PARTS BELOW THIS ############
 #################################################
 
-# Skip to line 810 for the regression analysis (OLS and RF)
+# Skip to line 660 for the regression analysis (OLS and RF)
 # Continue below to view preliminary results
 
 
@@ -640,30 +532,30 @@ raise Exception("Data successfully loaded. Go to line 625.")
 
 # all available as spreadsheets as well (Variable Information - Preliminary results folder)
 
-# below for LiDAR data
-infoL1 = pd.DataFrame(L1,index = LN).T.describe() # LiDAR cantareira 1
+# below for all lidar data
+infoL1 = pd.DataFrame(pixelL1,index = LN).T.describe() # LiDAR cantareira 1
 print(infoL1)
-infoL2 = pd.DataFrame(L2,index = LN).T.describe() # LiDAR cantareira 2
+infoL2 = pd.DataFrame(pixelL2,index = LN).T.describe() # LiDAR cantareira 2
 print(infoL2)
-infoL = pd.DataFrame(LT,index = LN).T.describe() # all lidar data
-print(infoL)
+infoLT = pd.DataFrame(pixelLT,index = LN).T.describe() # all lidar data
+print(infoLT)
 
 # below for lidar sentinel data
-infoC1_150811 = pd.DataFrame(C1_150811,index = SN).T.describe() # Sentinel 150811 Cantareira 1
+infoC1_150811 = pd.DataFrame(pixelC1_150811,index = SN).T.describe() # Sentinel 150811 Cantareira 1
 print(infoC1_150811)
-infoC2_150811 = pd.DataFrame(C2_150811,index = SN).T.describe() # Sentinel 150811 Cantareira 2
+infoC2_150811 = pd.DataFrame(pixelC2_150811,index = SN).T.describe() # Sentinel 150811 Cantareira 2
 print(infoC2_150811)
-infoC_150811 = pd.DataFrame(C_150811,index = SN).T.describe() # Sentinel 150811 Cantareira 1 and 2
+infoC_150811 = pd.DataFrame(pixelCT_150811,index = SN).T.describe() # Sentinel 150811 Cantareira 1 and 2
 print(infoC_150811)
-infoC2_160108 = pd.DataFrame(C2_160108,index = SN).T.describe() # Sentinel 160108 Cantareira 2
+infoC2_160108 = pd.DataFrame(pixelC2_160108,index = SN).T.describe() # Sentinel 160108 Cantareira 2
 print(infoC2_160108)
-infoC1_161223 = pd.DataFrame(C1_161223,index = SN).T.describe() # Sentinel 161223 Cantareira 1
+infoC1_161223 = pd.DataFrame(pixelC1_161223,index = SN).T.describe() # Sentinel 161223 Cantareira 1
 print(infoC1_150811)
-infoC2_161223 = pd.DataFrame(C2_161223,index = SN).T.describe() # Sentinel 161223 Cantareira 2
+infoC2_161223 = pd.DataFrame(pixelC2_161223,index = SN).T.describe() # Sentinel 161223 Cantareira 2
 print(infoC2_161223)
-infoC_161223 = pd.DataFrame(C_161223,index = SN).T.describe() # Sentinel 161223 Cantareira 1 and 2
+infoC_161223 = pd.DataFrame(pixelCT_161223,index = SN).T.describe() # Sentinel 161223 Cantareira 1 and 2
 print(infoC_161223)
-infoC2_180122 = pd.DataFrame(C2_180122,index = SN).T.describe() # Sentinel 180122 Cantareira 2
+infoC2_180122 = pd.DataFrame(pixelC2_180122,index = SN).T.describe() # Sentinel 180122 Cantareira 2
 print(infoC2_180122)
 
 # below for all field data
@@ -718,92 +610,52 @@ for i in Serie:
 r = np.array(r)
 print(r)
 
-# correlations spearman r or OLS r2
+
+################################################
+# correlations spearman r and preliminar OLS r2
 
 # run one line at a time to visualize the results in the Plots tab
 
-#plot Spearman r values for single bands (LiDAR)
-plotr(C2_150811, L2, SN, LN, 'LiDAR vs Sentinel 11/08/2015')
-plotr(C2_160108, L2, SN, LN, 'LiDAR vs Sentinel 08/01/2016')
-plotr(C2_161223, L2, SN, LN, 'LiDAR vs Sentinel 23/12/2016')
-plotr(C2_180122, L2, SN, LN, 'LiDAR vs Sentinel 22/01/2018')
+pathSave = '' # don't save a plot file
+pathSave = 'C:/Users/gerez/Desktop/' # uncomment and change path to save a plot file
 
-#plot Spearman r values for vegetation indices (LiDAR)
-plotr(L2, C2_150811_VIS, LN, names_VIS, 'LiDAR vs VIs Sentinel 11/08/2015')
-plotr(L2, C2_160108_VIS, LN, names_VIS, 'LiDAR vs VIs Sentinel 08/01/2016')
-plotr(L2, C2_161223_VIS, LN, names_VIS, 'LiDAR vs VIs Sentinel 23/12/2016')
-plotr(L2, C2_180122_VIS, LN, names_VIS, 'LiDAR vs VIs Sentinel 22/01/2018')
-plotr(Field, indicesField, FieldN, names_VIS, 'Field vs VIs Sentinel 08/01/2016 and 23/12/2016')
+# Sentinel vs sentinel bands - spearman r
+multiplot(pixelC2_150811, pixelC2_150811, SN, SN, 'Sentinel 2 11-08-2015', path = pathSave)
+multiplot(pixelC2_160108, pixelC2_160108, SN, SN, 'Sentinel 2 08-01-2016', path = pathSave)
+multiplot(pixelC2_161223, pixelC2_161223, SN, SN, 'Sentinel 2 23-12-2016', path = pathSave)
+multiplot(pixelC2_180122, pixelC2_180122, SN, SN, 'Sentinel 2 22-01-2018', path = pathSave)
 
-#plot Spearman r values for SR and ND indices (LiDAR)
-plotSRr(C2_150811, L2, SN, LN, nome = 'Sentinel 2 110815 ')
-plotNDr(C2_150811, L2, SN, LN, nome = 'Sentinel 2 110815 ')
-plotSRr(C2_160108, L2, SN, LN, nome = 'Sentinel 2 080116 ')
-plotNDr(C2_160108, L2, SN, LN, nome = 'Sentinel 2 080116 ')
-plotSRr(C2_161223, L2, SN, LN, nome = 'Sentinel 2 231216 ')
-plotNDr(C2_161223, L2, SN, LN, nome = 'Sentinel 2 231216 ')
-plotSRr(C2_180122, L2, SN, LN, nome = 'Sentinel 2 220118 ')
-plotNDr(C2_180122, L2, SN, LN, nome = 'Sentinel 2 220118 ')
+# Multiple scatter plots OLS r2
+multiplotOLS(pixelC2_150811, pixelL2, SN, LN, 'Sentinel 2 11-08-2015', size = 0.25, path = pathSave) #Vegetation indices (11/08/2015) vs cantareira 2
+multiplotOLS(pixelC2_160108, pixelL2, SN, LN, 'Sentinel 2 08-01-2016', size = 0.25, path = pathSave) #Vegetation indices (08/01/2016) vs cantareira 2
+multiplotOLS(pixelC2_161223, pixelL2, SN, LN, 'Sentinel 2 23-12-2016', size = 0.25, path = pathSave) #Vegetation indices (23/12/2016) vs cantareira 2
+multiplotOLS(pixelC2_180122, pixelL2, SN, LN, 'Sentinel 2 22-01-2018', size = 0.25, path = pathSave) #Vegetation indices (22/01/2018) vs cantareira 2
 
-#plot OLS r2 values for SR and ND indices (LiDAR)
-plotSRr2(C2_150811, L2, SN, LN, nome = 'Sentinel 2 110815 ')
-plotSRr2(C2_160108, L2, SN, LN, nome = 'Sentinel 2 080116 ')
-# plotSRr2(C_161223, LT, SN, LN, nome = 'Sentinel 2 231216 ') # cantareira 1 and 2
-plotSRr2(C2_161223, L2, SN, LN, nome = 'Sentinel 2 231216 ')
-plotSRr2(C2_180122, L2, SN, LN, nome = 'Sentinel 2 220118 ')
-plotNDr2(C2_150811, L2, SN, LN, nome = 'Sentinel 2 110815 ')
-plotNDr2(C2_160108, L2, SN, LN, nome = 'Sentinel 2 080116 ')
-plotNDr2(C2_161223, L2, SN, LN, nome = 'Sentinel 2 231216 ')
-plotNDr2(C_161223, LT, SN, LN, nome = 'Sentinel 2 231216 ') # cantareira 1 and 2
-plotNDr2(C2_180122, L2, SN, LN, nome = 'Sentinel 2 220118 ')
+# Multiple scatter plots OLS r2 VIS
+multiplotOLS(pixelC2_150811_VIS, pixelL2, names_VIS, LN, 'Sentinel 2 11-08-2015', size = 0.25, path = pathSave) #Vegetation indices (11/08/2015) vs cantareira 2
+multiplotOLS(pixelC2_160108_VIS, pixelL2, names_VIS, LN, 'Sentinel 2 08-01-2016', size = 0.25, path = pathSave) #Vegetation indices (08/01/2016) vs cantareira 2
+multiplotOLS(pixelC2_161223_VIS, pixelL2, names_VIS, LN, 'Sentinel 2 23-12-2016', size = 0.25, path = pathSave) #Vegetation indices (23/12/2016) vs cantareira 2
+multiplotOLS(pixelC2_180122_VIS, pixelL2, names_VIS, LN, 'Sentinel 2 22-01-2018', size = 0.25, path = pathSave) #Vegetation indices (22/01/2018) vs cantareira 2
 
-#plot spearman r or OLS r2 values for field data
-plotr(Sentinel, Field, SentinelN, FieldN, 'Field vs Sentinel 08/01/2016 and 23/12/2016')
-plotr(indicesField, Field, names_VIS, FieldN, 'Field vs Vegetation Indices')
-plotSRr(Sentinel, Field, SentinelN, FieldN) # plot Spearman r values for SR indices
-plotNDr(Sentinel, Field, SentinelN, FieldN) # plot Spearman r values for ND indices
-plotSRr2(Sentinel, Field, SentinelN, FieldN, nome = 'Sentinel 2 220118 and 231216 ') # plot OLS r2 values for SR indices
-plotNDr2(Sentinel, Field, SentinelN, FieldN, nome = 'Sentinel 2 220118 and 231216 ') # plot OLS r2 values for ND indices
+# Plot OLS r2 values for SR and ND indices
+plotSRr2(pixelC2_150811, pixelL2, SN, LN, nome = 'Sentinel 2 11-08-2015', path = pathSave)
+plotSRr2(pixelC2_160108, pixelL2, SN, LN, nome = 'Sentinel 2 08-01-2016', path = pathSave)
+plotSRr2(pixelC2_161223, pixelL2, SN, LN, nome = 'Sentinel 2 23-12-2016', path = pathSave)
+plotSRr2(pixelC2_180122, pixelL2, SN, LN, nome = 'Sentinel 2 22-01-2018', path = pathSave)
 
-#multiple scatter plots - correlation spearman r
-multiplot(Sentinel, Field, SentinelN, FieldN) #Sentinel 2 vs Field data
-multiplot(C_150811, LT, SN, LN) #Sentinel 2 vs Cantareira 1 and 2
-multiplot(C2_150811, L2, SN, LN) #Sentinel 2 vs cantareira 2
-multiplot(C_161223, LT, SN, LN) #Sentinel 2 vs Cantareira 1 and 2
-multiplot(C2_160108, L2, SN, LN) #Sentinel 2 vs cantareira 2
-multiplot(C2_161223, L2, SN, LN) #Sentinel 2 vs cantareira 2
-multiplot(C2_180122, L2, SN, LN) #Sentinel 2 vs cantareira 2
-
-multiplot(indicesField, Field, names_VIS, FieldN) #Vegetation indices vs Field data
-multiplot(C2_150811_VIS, L2, names_VIS, LN) #Vegetation indices (11/08/2015) vs cantareira 2
-multiplot(C2_160108_VIS, L2, names_VIS, LN) #Vegetation indices (08/01/2016) vs cantareira 2
-multiplot(C2_161223_VIS, L2, names_VIS, LN) #Vegetation indices (23/12/2016) vs cantareira 2
-multiplot(C2_180122_VIS, L2, names_VIS, LN) #Vegetation indices (22/01/2018) vs cantareira 2
-
-#multiple scatter plots OLS r2
-multiplotOLS(Sentinel, Field, SentinelN, FieldN) #Sentinel 2 vs Field data
-multiplotOLS(Sentinel_160108, Field_160108, SentinelN, FieldN)
-multiplotOLS(Sentinel_161223, Field_161223, SentinelN, FieldN)
-# multiplotOLS(C_150811, LT, SN, LN) #Sentinel 2 vs Cantareira 1 and 2
-multiplotOLS(C2_150811, L2, SN, LN) #Sentinel 2 vs cantareira 2
-# multiplotOLS(C_161223, LT, SN, LN) #Sentinel 2 vs Cantareira 1 and 2
-multiplotOLS(C2_160108, L2, SN, LN) #Sentinel 2 vs cantareira 2
-multiplotOLS(C2_161223, L2, SN, LN) #Sentinel 2 vs cantareira 2
-multiplotOLS(C2_180122, L2, SN, LN) #Sentinel 2 vs cantareira 2
-
-multiplotOLS(indicesField, Field, names_VIS, FieldN) #Vegetation indices vs Field data
-multiplotOLS(C2_150811_VIS, L2, names_VIS, LN) #Vegetation indices (11/08/2015) vs cantareira 2
-multiplotOLS(C2_160108_VIS, L2, names_VIS, LN) #Vegetation indices (08/01/2016) vs cantareira 2
-multiplotOLS(C2_161223_VIS, L2, names_VIS, LN) #Vegetation indices (23/12/2016) vs cantareira 2
-multiplotOLS(C2_180122_VIS, L2, names_VIS, LN) #Vegetation indices (22/01/2018) vs cantareira 2
-
-# Sentinel 2 vs Sentinel bands 2 spearman r
-multiplot(C2_150811, C2_150811, SN, SN, 'Sentinel 2 11-08-2015')
-multiplot(C2_160108, C2_160108, SN, SN, 'Sentinel 2 08-01-2016')
-multiplot(C2_161223, C2_161223, SN, SN, 'Sentinel 2 23-12-2016')
-multiplot(C2_180122, C2_180122, SN, SN, 'Sentinel 2 22-01-2018')
+plotNDr2(pixelC2_150811, pixelL2, SN, LN, nome = 'Sentinel 2 11-08-2015', path = pathSave)
+plotNDr2(pixelC2_160108, pixelL2, SN, LN, nome = 'Sentinel 2 08-01-2016', path = pathSave)
+plotNDr2(pixelC2_161223, pixelL2, SN, LN, nome = 'Sentinel 2 23-12-2016', path = pathSave)
+plotNDr2(pixelC2_180122, pixelL2, SN, LN, nome = 'Sentinel 2 22-01-2018', path = pathSave)
 
 
+#######################
+# preliminar OLS Field
+
+multiplotOLS(Sentinel, Field, SentinelN, FieldN, 'Sentinel 2 Bands 220118 and 231216', path = pathSave) #Sentinel 2 vs Field data
+multiplotOLS(indicesField, Field, names_VIS, FieldN, 'Sentinel 2 VIs 220118 and 231216', path = pathSave) #Vegetation indices vs Field data
+plotSRr2(Sentinel, Field, SentinelN, FieldN, nome = 'Sentinel 2 220118 and 231216 ', path = pathSave) # plot OLS r2 values for SR indices
+plotNDr2(Sentinel, Field, SentinelN, FieldN, nome = 'Sentinel 2 220118 and 231216 ', path = pathSave) # plot OLS r2 values for ND indices
 
 
 #######################
@@ -815,138 +667,6 @@ multiplot(C2_180122, C2_180122, SN, SN, 'Sentinel 2 22-01-2018')
 #Choose ONLY ONE validation method below (run from "valnamesave" to "names_e = names_All")
 #Then proceed to choose a model type in line 1035
 
-#################
-# For LiDAR data
-#    V  V  V 
-
-################
-###### Buffers #
-
-#Spatial Validation 23/12/2016
-valnamesave = 'spatial validation'
-valtype = 'spatial\nvalidation'
-treino_e = C1_161223_All; treino_r = L1
-teste_e = C2_161223_All; teste_r = L2
-names_r = LN
-names_e = names_All
-
-##################################################################################
-#with images 23/12/2016 (train) and 08/01/2016 (test)
-
-#Temporal Validation 23/12/2016 (train) and 08/01/2016 (test)
-valnamesave = 'temporal validation'
-valtype = 'temporal\nvalidation'
-treino_e = C2_161223_All; treino_r = L2
-teste_e = C2_160108_All; teste_r = L2
-names_r = LN
-names_e = names_All
-
-#Spatial and Temporal Validation 23/12/2016 (train) and 08/01/2016 (test)
-valnamesave = 'spatial and temporal validation'
-valtype = 'spatial\nand temporal validation'
-treino_e = C1_161223_All; treino_r = L1
-teste_e = C2_160108_All; teste_r = L2
-names_r = LN
-names_e = names_All
-
-#Local Spatial and Temporal Validation 23/12/2016 (train) and 08/01/2016 (test)
-valnamesave = 'local spatial and temporal validation'
-valtype = 'local spatial\nand temporal validation'
-treino_e = train_test_split(C2_161223_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[0].transpose();
-treino_r = train_test_split(C2_161223_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[2].transpose();
-teste_e = train_test_split(C2_160108_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[1].transpose();
-teste_r = train_test_split(C2_160108_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[3].transpose();
-names_r = LN
-names_e = names_All
-
-########################################################################################
-#with images 08/01/2016 and 22/01/2018 for training in C2, 23/12/2016 for testing in C1
-
-#Enhanced Spatial and Temporal Validation 08/01/2016 (train), 22/01/2018 (train) and 23/12/2016 (test)
-treino_e1 = train_test_split(C2_180122_All.transpose(), L2.transpose(), test_size = 0.5, random_state = 42)[0].transpose();
-treino_r1 = train_test_split(C2_180122_All.transpose(), L2.transpose(), test_size = 0.5, random_state = 42)[2].transpose();
-treino_e2 = train_test_split(C2_160108_All.transpose(), L2.transpose(), test_size = 0.5, random_state = 42)[1].transpose();
-treino_r2 = train_test_split(C2_160108_All.transpose(), L2.transpose(), test_size = 0.5, random_state = 42)[3].transpose();
-
-valnamesave = 'enhanced spatial and temporal validation'
-valtype = 'enhanced spatial\nand temporal validation'
-treino_e = np.hstack([treino_e1,treino_e2])
-treino_r = np.hstack([treino_r1,treino_r2])
-teste_e = C1_161223_All; teste_r = L1
-names_r = LN
-names_e = names_All
-
-
-
-# note: the results from below this are not shown in our work.
-
-##################################################################################
-#with images 23/12/2016 (train) and 22/01/2018 (test)
-
-#Temporal Validation 23/12/2016 (train) and 22/01/2018 (test)
-valnamesave = 'temporal validation'
-valtype = 'temporal\nvalidation'
-treino_e = C2_161223_All; treino_r = L2
-teste_e = C2_180122_All; teste_r = L2
-names_r = LN
-names_e = names_All
-
-#Spatial and Temporal Validation 23/12/2016 (train) and 22/01/2018 (test)
-valnamesave = 'spatial and temporal validation'
-valtype = 'spatial\nand temporal validation'
-treino_e = C1_161223_All; treino_r = L1
-teste_e = C2_180122_All; teste_r = L2
-names_r = LN
-names_e = names_All
-
-#Local Spatial and Temporal Validation 23/12/2016 (train) and 22/01/2018 (test)
-valnamesave = 'local spatial and temporal validation'
-valtype = 'local spatial\nand temporal validation'
-treino_e = train_test_split(C2_161223_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[0].transpose();
-treino_r = train_test_split(C2_161223_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[2].transpose();
-teste_e = train_test_split(C2_180122_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[1].transpose();
-teste_r = train_test_split(C2_180122_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[3].transpose();
-names_r = LN
-names_e = names_All
-
-#with images 23/12/2016 (train) and 11/08/2015 (test)
-
-#Temporal Validation 23/12/2016 (train) and 11/08/2015 (test)
-valnamesave = 'temporal validation'
-valtype = 'temporal\nvalidation'
-treino_e = C2_161223_All; treino_r = L2
-teste_e = C2_150811_All; teste_r = L2
-names_r = LN
-names_e = names_All
-
-#Spatial and Temporal Validation 23/12/2016 (train) and 11/08/2015 (test)
-valnamesave = 'spatial and temporal validation'
-valtype = 'spatial\nand temporal validation'
-treino_e = C1_161223_All; treino_r = L1
-teste_e = C2_150811_All; teste_r = L2
-names_r = LN
-names_e = names_All
-
-#Local Spatial and Temporal Validation 23/12/2016 (train) and 11/08/2015 (test)
-valnamesave = 'local spatial and temporal validation'
-valtype = 'local spatial\nand temporal validation'
-treino_e = train_test_split(C2_161223_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[0].transpose();
-treino_r = train_test_split(C2_161223_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[2].transpose();
-teste_e = train_test_split(C2_150811_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[1].transpose();
-teste_r = train_test_split(C2_150811_All.transpose(), L2.transpose(), test_size = 0.25, random_state = 42)[3].transpose();
-names_r = LN
-names_e = names_All
-
-
-
-
-################
-###### Pixels #
-
-# You can train models in buffers and test in pixels
-# To do this, run treino_e and treino_r in buffers
-# Then run teste_e and teste_r in pixels
-# Remember to choose the same validation method for both
 
 #Spatial Validation 23/12/2016
 valnamesave = 'spatial validation'
@@ -986,7 +706,7 @@ names_r = LN
 names_e = names_All
 
 ########################################################################################
-#with images 08/01/2016 and 22/01/2018 for training in pixelC2, 23/12/2016 for testing in pixelC1
+#with images 08/01/2016 and 22/01/2018 for training in C2, 23/12/2016 for testing in C1
 
 #Enhanced Spatial and Temporal Validation 08/01/2016 (train) and 22/01/2018 (train) and 23/12/2016 (test)
 treino_e1 = train_test_split(pixelC2_180122_All.transpose(), pixelL2.transpose(), test_size = 0.5, random_state = 42)[0].transpose();
@@ -1004,32 +724,6 @@ names_e = names_All
 
 
 
-
-##################
-# for Field data #
-
-#Spatial validation
-valnamesave = 'spatial validation'
-valtype = 'spatial\nvalidation'
-treino_e = train_test_split(Sentinel.transpose(), Field.transpose(), test_size = 0.25, random_state = 42)[0].transpose();
-treino_r = train_test_split(Sentinel.transpose(), Field.transpose(), test_size = 0.25, random_state = 42)[2].transpose();
-teste_e = train_test_split(Sentinel.transpose(), Field.transpose(), test_size = 0.25, random_state = 42)[1].transpose();
-teste_r = train_test_split(Sentinel.transpose(), Field.transpose(), test_size = 0.25, random_state = 42)[3].transpose();
-names_r = FieldN
-names_e = SentinelN
-
-#Spatial and Temporal Validation
-valnamesave = 'spatial and temporal validation'
-valtype = 'spatial\nand temporal validation'
-treino_e = Sentinel_161223; treino_r = Field_161223
-teste_e = Sentinel_160108; teste_r = Field_160108
-names_r = FieldN
-names_e = SentinelN
-
-
-
-
-
 ##############################################################################
 # Choose a vegetation variable (n): 0 = mean, 1 = median, 2 = stdev, 3 = max #
 ##############################################################################
@@ -1040,9 +734,9 @@ n = 0 # mean
 
 n = 1 # median
 
-n = 2 # stdev (not available for test with pixels)
+n = 2 # stdev
 
-n = 3 # max (not available for test with pixels)
+n = 3 # max
 
 
 #######
@@ -1063,35 +757,30 @@ n = 3 # max (not available for test with pixels)
 ##############################################################
 # generate index for band combinations OLS model with best AIC
 
-index, table = selectOLS_Bands(treino_e[list(range(0,9))],treino_r[n],names_e)
+index, table = selectOLS_Bands(treino_e[list(range(0,9))],treino_r[n],names_e); varstype = '1'
 
 #################################################################
 # generate index for single literature VI OLS model with best AIC
 
-index, table = selectOLS_VIS(treino_e[list(range(9,13))],treino_r[n],names_e)
+index, table = selectOLS_VIS(treino_e[list(range(9,13))],treino_r[n],names_e); varstype = '2'
 
 ############################################################
 # generate index for single SR/ND VI OLS model with best AIC
 
-index, table = selectOLS_VIS(treino_e[list(range(13,treino_e.shape[0]))],treino_r[n],names_e)
+index, table = selectOLS_VIS(treino_e[list(range(13,treino_e.shape[0]))],treino_r[n],names_e); varstype = '3'
 
 # Type names_e[index] in the console to see all explanatory variables used in the model
 
-########
-# other
 
 # index = list(range(0,9)) # run this to use all bands
 # index = list(range(0,13)) # run this to use all bands and literature VIs
 # index = list(range(0,treino_e.shape[0])) # run this to use all variables
 
-# below is an index for an interesting band / VIs combination with very good OLS results:
-# index = [1,5,9,12,34,36,47,70,72]
-# ['B03', 'B07', 'SAVI', 'S2REP', 'SRB05B06', 'SRB05B8A', 'SRB8AB12', 'NDB05B06', 'NDB05B8A']
-
 
 ###################################################################
-# Generate OLS model and predictions (choose an index above first!)
+# Generate OLS or WLS model and predictions (choose an index above first!)
 
+######
 # OLS
 regtype = 'OLS_'
 modelo = sm.OLS(treino_r[n], sm.add_constant(treino_e[index].transpose())).fit()
@@ -1108,10 +797,59 @@ label = 'Predicted OLS - ' + valtype + '\n'
 print(valnamesave)
 print('ME:',me,'MAE:',mae,'RMSE:',rmse,'RRSE:',rrse)
 
-# WLS (OLS with weights, not used in our work)
-# WARNING: the weights (w) are only defined for LHmean (n = 0) with buffers
+
+######
+# WLS
+
+# OLS with weights (w), not used in our work
+
+########################################################################
+# estimate w per variance, stdev or number of samples in classes (bins)
+
+df = pd.Series(treino_r[n])
+intervals = df.value_counts(bins=5, sort=False)
+
+########### comment this block to use number of samples as weights #######
+# variace/stdev as weights
+split = np.split(np.sort(treino_r[n]),np.cumsum(list(intervals.values))[:-1])
+varstd = []
+# for i in split: varstd.append(i.var()) # variance
+for i in split: varstd.append(i.std()) # standard deviation
+intervals = pd.Series(varstd,intervals.index)
+##########################################################################
+
+out = pd.cut(list(df),intervals.index,labels=np.round(intervals.values,decimals=3).astype(str))
+w = intervals.values[out.codes]
+
+
+################################################################
+# estimate w from previous OLS model (run OLS the model first!)
+
+modelo_w = sm.OLS(abs(modelo.resid), modelo.model.exog).fit() #squared (or not) residuals
+#modelo_w = sm.OLS(abs(modelo.resid), modelo.model.endog).fit() #squared (or not) residuals
+#w = abs(modelo_w.fittedvalues)**-1
+w = abs(modelo_w.fittedvalues).max() + abs(modelo_w.fittedvalues).min() - abs(modelo_w.fittedvalues)
+
+
+###########
+# invert w
+
+w = w.max() + w.min() - w
+# w = w/w.max() # normalizing has no effect
+
+
+##########################################
+# plot w vs the response variable
+
+plt.plot(treino_r[n],w,'ko',ms=0.5)
+
+
+
+#########################
+# create WLS model
+
 regtype = 'WLS_'
-w = (treino_r[4].min()+treino_r[4].max())*np.ones(treino_r.shape[1])-treino_r[4]
+#w = (treino_r[4].min()+treino_r[4].max())*np.ones(treino_r.shape[1])-treino_r[4]
 # w = np.ones(treino_r.shape[1])
 modelo = sm.WLS(treino_r[n], sm.add_constant(treino_e[index].transpose()), w).fit()
 names = 'Predição WLS - '; print(names_e[index],names_r[n])
@@ -1146,17 +884,17 @@ print('ME:',me,'MAE:',mae,'RMSE:',rmse,'RRSE:',rrse)
 ##############################################################
 # generate index for band combinations with best OOB score
 
-index, table = selectRF_Bands(treino_e[list(range(0,9))],treino_r[n],names_e)
+index, table = selectRF_Bands(treino_e[list(range(0,9))],treino_r[n],names_e); varstype = '1'
 
 ###############################################################################
 # generate index for single literature vegetation index with best OOB score
 
-index, table = selectRF_VIS(treino_e[list(range(9,13))],treino_r[n],names_e)
+index, table = selectRF_VIS(treino_e[list(range(9,13))],treino_r[n],names_e); varstype = '2'
 
 ###############################################################################
 # generate index for single SR / ND vegetation index with best OOB score
 
-index, table = selectRF_VIS(treino_e[list(range(13,treino_e.shape[0]))],treino_r[n],names_e)
+index, table = selectRF_VIS(treino_e[list(range(13,treino_e.shape[0]))],treino_r[n],names_e); varstype = '3'
 
 # Type names_e[index] in the console to see all explanatory variables used in the model
 
@@ -1214,17 +952,17 @@ curve = np.polyfit(pred, teste_r[n], 1)
 fiter = np.poly1d(curve)
 plt.title('ME: ' + str(round(me,2)) + ' MAE: ' + str(round(mae,2)) + '\nRMSE: ' + str(round(rmse,2)) + ' RRSE: ' + str(round(rrse,2)),fontsize = fsize)
 linha = np.linspace(np.min(teste_r[n]),np.max(teste_r[n]),2)
-sticks = [2,2,1,2] # change ticks spacing for each variable
+sticks = [3,3,2,4] # change ticks spacing for each variable
 plt.xticks(np.arange(0, 100, sticks[n]))
 plt.yticks(np.arange(0, 100, sticks[n]))
 #plot
-plt.plot(pred,teste_r[n],'ro',ms=3)
+plt.plot(pred,teste_r[n],'ro',ms=0.5)
 plt.plot(pred, fiter(pred), 'b-', linewidth = 3)
 plt.plot(linha, linha, 'k', linewidth = 2, linestyle = '--')
 
 #save
-# change the directory below to save a figure file
-# plt.savefig('C:/Users/gerez/Desktop/'+valnamesave+regtype+names_r[n], dpi=300, bbox_inches='tight')
+#change the directory below to save a figure file
+plt.savefig('C:/Users/geral/Desktop/'+valnamesave+regtype+names_r[n]+varstype, dpi=300, bbox_inches='tight')
 
 
 
@@ -1274,11 +1012,11 @@ r**2
 plt.hist(modelo.resid,15)
 
 # residuals vs fitted values
-plt.plot(modelo.fittedvalues,modelo.resid,'ko')
+plt.plot(modelo.fittedvalues,modelo.resid,'ko',ms=1)
 plt.plot([modelo.fittedvalues.min(),modelo.fittedvalues.max()],np.zeros(2),'r--')
 
 # real values vs fitted values
-plt.plot(modelo.fittedvalues,modelo.model.endog,'ko')
+plt.plot(modelo.fittedvalues,modelo.model.endog,'ko',ms=1)
 mini = min(modelo.model.endog.min(),modelo.fittedvalues.min())
 maxi = max(modelo.model.endog.max(),modelo.fittedvalues.max())
 plt.plot([mini,maxi],[mini,maxi],'r--')
@@ -1286,5 +1024,6 @@ plt.plot([mini,maxi],[mini,maxi],'r--')
 # plots for single predictive variables at a time
 # change the variable with the number (second argument)
 sm.graphics.plot_regress_exog(modelo,0)
+
 
 
