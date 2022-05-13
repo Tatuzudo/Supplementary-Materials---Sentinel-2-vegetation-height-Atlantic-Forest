@@ -402,13 +402,13 @@ def printImp(mod,name,res_n):
 ####################
 
 #File paths
-pathMain = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/')
-pathL = pathMain + "/Lidar.csv" #LiDAR data
+pathMain = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') #get relative path
 pathField = pathMain + "/Field.csv" #Field data
 pathSentinel = pathMain + "/SentinelField.csv" #Sentinel for Field
-pathSerie1 = pathMain + "/Serie1.csv" #time series
-pathSerie2 = pathMain + "/Serie2.csv" #time series
-pathSerie = pathMain + "/SerieT.csv" #time series
+pathSerie1 = pathMain + "/Serie1.csv" #time series Sentinel Data
+pathSerie2 = pathMain + "/Serie2.csv" #time series LiDAR data
+pathSerie = pathMain + "/SerieT.csv" #time series LiDAR data
+pathL = pathMain + "/Lidar.csv" #time series LiDAR data
 
 #Sentinel L1C Time Series B5
 Serie1, SerieN1 = impcsv(pathSerie1)
@@ -577,7 +577,7 @@ print(infoFS_161223)
 ##############
 # time series
 
-#Spearman r values for all L1C Sentinel 2 images (dates) and Cantareira 1 LiDAR data (LHmean)
+#Spearman r values for all cloudless L1C Sentinel 2 images (dates) and Cantareira 1 LiDAR data (LHmean)
 c = 0
 r1 = []
 S=Serie1
@@ -588,7 +588,7 @@ for i in Serie1:
 r1 = np.array(r1)
 print(r1)
 
-#Spearman r values for all L1C Sentinel 2 images (dates) and Cantareira 2 LiDAR data (LHmean)
+#Spearman r values for all cloudless L1C Sentinel 2 images (dates) and Cantareira 2 LiDAR data (LHmean)
 c = 0
 r2 = []
 S=Serie2
@@ -599,7 +599,7 @@ for i in Serie2:
 r2 = np.array(r2)
 print(r2)
 
-#Spearman r values for all L1C Sentinel 2 images (dates) and All LiDAR data (LHmean)
+#Spearman r values for all cloudless L1C Sentinel 2 images (dates) and All LiDAR data (LHmean)
 c = 0
 r = []
 S=Serie
@@ -615,15 +615,17 @@ print(r)
 # correlations spearman r and preliminar OLS r2
 
 # run one line at a time to visualize the results in the Plots tab
+# run "pathSave = '' first"
 
 pathSave = '' # don't save a plot file
-pathSave = 'C:/Users/gerez/Desktop/' # uncomment and change path to save a plot file
+# pathSave = 'C:/Users/gerez/Desktop/' # uncomment and change path to save a plot file
 
 # Sentinel vs sentinel bands - spearman r
 multiplot(pixelC2_150811, pixelC2_150811, SN, SN, 'Sentinel 2 11-08-2015', path = pathSave)
 multiplot(pixelC2_160108, pixelC2_160108, SN, SN, 'Sentinel 2 08-01-2016', path = pathSave)
 multiplot(pixelC2_161223, pixelC2_161223, SN, SN, 'Sentinel 2 23-12-2016', path = pathSave)
 multiplot(pixelC2_180122, pixelC2_180122, SN, SN, 'Sentinel 2 22-01-2018', path = pathSave)
+multiplot(Sentinel, Sentinel, SN, SN, 'Sentinel 2 22-01-2018', path = pathSave)
 
 # Multiple scatter plots OLS r2
 multiplotOLS(pixelC2_150811, pixelL2, SN, LN, 'Sentinel 2 11-08-2015', size = 0.25, path = pathSave) #Vegetation indices (11/08/2015) vs cantareira 2
@@ -656,6 +658,7 @@ multiplotOLS(Sentinel, Field, SentinelN, FieldN, 'Sentinel 2 Bands 220118 and 23
 multiplotOLS(indicesField, Field, names_VIS, FieldN, 'Sentinel 2 VIs 220118 and 231216', path = pathSave) #Vegetation indices vs Field data
 plotSRr2(Sentinel, Field, SentinelN, FieldN, nome = 'Sentinel 2 220118 and 231216 ', path = pathSave) # plot OLS r2 values for SR indices
 plotNDr2(Sentinel, Field, SentinelN, FieldN, nome = 'Sentinel 2 220118 and 231216 ', path = pathSave) # plot OLS r2 values for ND indices
+
 
 
 #######################
@@ -961,8 +964,8 @@ plt.plot(pred, fiter(pred), 'b-', linewidth = 3)
 plt.plot(linha, linha, 'k', linewidth = 2, linestyle = '--')
 
 #save
-#change the directory below to save a figure file
-plt.savefig('C:/Users/geral/Desktop/'+valnamesave+regtype+names_r[n]+varstype, dpi=300, bbox_inches='tight')
+#change the directory (string) below to save a figure file
+# plt.savefig('C:/Users/geral/Desktop/'+valnamesave+regtype+names_r[n]+varstype, dpi=300, bbox_inches='tight')
 
 
 
