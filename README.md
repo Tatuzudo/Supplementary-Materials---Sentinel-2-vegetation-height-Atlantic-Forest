@@ -1,6 +1,4 @@
-###########
-# Folders #
-###########
+Folders
 
 Time series:
 A time series of the Spearman’s ranked correlation between the LiDAR height mean variable (LHmean) and all available level-1C (TOA) Sentinel 2 imagery. This procedure was made using Google Earth Engine infrastructure and python. Since field data was distributed in a larger region, it was prone to cloud interference and, thus, not used in the time series. Additionally, the Spearman’s value was chosen instead of Pearson’s for being less affected by outliers and for its ability to deal with non-linear monotonic relations. For convenience and based on preliminary correlation tests made with the 23/12/2016 image, only band 5 (705 nm) was used in the time series analysis. Only images without clouds in at least one of the Cantareira 1 and 2 areas were used. When both areas were clear, the r value of highest magnitude was considered.
