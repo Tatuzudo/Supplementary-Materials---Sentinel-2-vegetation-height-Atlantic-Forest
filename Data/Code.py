@@ -1,6 +1,6 @@
 # intended for use in anaconda - spyder ide
 # click "run file" (or press F5) once
-# proceed to line 520
+# proceed to line 515
 
 ##########
 # import #
@@ -142,7 +142,6 @@ def plotr(dadoST, dados1, nomeST, nomes1, titulo = 'gráfico', cor = 'cubehelix'
         plt.gcf().set_size_inches(6.5,1.7)
         plt.yticks(rotation=0); plt.xticks(rotation=0)
         plt.tight_layout()
-        # plt.savefig('C:/Users/gerez/Desktop/temp.png', dpi=300) #uncomment this and change the path to save files
 
 #create simple ratios
 def SimpRat(sentinel, nome):
@@ -517,7 +516,7 @@ raise Exception("Data successfully loaded. Go to line 520.")
 ############ RUN IN PARTS BELOW THIS ############
 #################################################
 
-# Skip to line 660 for the regression analysis (OLS and RF)
+# Skip to line 665 for the predictions with regression analysis (OLS, WLS and RF)
 # Continue below to view preliminary results
 
 
@@ -614,11 +613,11 @@ print(r)
 ################################################
 # correlations spearman r and preliminar OLS r2
 
-# run one line at a time to visualize the results in the Plots tab
-# run "pathSave = '' first"
+# run one line at a time to visualize the results
+# run pathSave = '' if you don't want to save plots or pathSave = 'C:/...' to choose a path to save plots
 
 pathSave = '' # don't save a plot file
-# pathSave = 'C:/Users/gerez/Desktop/' # uncomment and change path to save a plot file
+# pathSave = 'C:/Users/user/Desktop/' # uncomment and change path to save a plot file
 
 # Sentinel vs sentinel bands - spearman r
 multiplot(pixelC2_150811, pixelC2_150811, SN, SN, 'Sentinel 2 11-08-2015', path = pathSave)
@@ -665,7 +664,7 @@ plotNDr2(Sentinel, Field, SentinelN, FieldN, nome = 'Sentinel 2 220118 and 23121
 # Regression Analysis #
 #######################
 
-# Select a code block and click "run selection or current line" (F9)
+# Select a code block and click "run selection or current line" (F9) (in spyder ide)
 
 #Choose ONLY ONE validation method below (run from "valnamesave" to "names_e = names_All")
 #Then proceed to choose a model type in line 1035
@@ -804,7 +803,7 @@ print('ME:',me,'MAE:',mae,'RMSE:',rmse,'RRSE:',rrse)
 ######
 # WLS
 
-# OLS with weights (w), not used in our work
+# OLS with weights (w), not shown in our work
 
 ########################################################################
 # estimate w per variance, stdev or number of samples in classes (bins)
@@ -812,14 +811,19 @@ print('ME:',me,'MAE:',mae,'RMSE:',rmse,'RRSE:',rrse)
 df = pd.Series(treino_r[n])
 intervals = df.value_counts(bins=5, sort=False)
 
-########### comment this block to use number of samples as weights #######
+
+##########################################################################
+# comment (or don't run) this block to use number of samples as weights!
+
 # variace/stdev as weights
 split = np.split(np.sort(treino_r[n]),np.cumsum(list(intervals.values))[:-1])
 varstd = []
-# for i in split: varstd.append(i.var()) # variance
-for i in split: varstd.append(i.std()) # standard deviation
+# for i in split: varstd.append(i.var()) # use variance
+for i in split: varstd.append(i.std()) # use standard deviation
 intervals = pd.Series(varstd,intervals.index)
+#
 ##########################################################################
+
 
 out = pd.cut(list(df),intervals.index,labels=np.round(intervals.values,decimals=3).astype(str))
 w = intervals.values[out.codes]
@@ -827,6 +831,7 @@ w = intervals.values[out.codes]
 
 ################################################################
 # estimate w from previous OLS model (run OLS the model first!)
+# comment this to use weights by stdev or number of samples.
 
 modelo_w = sm.OLS(abs(modelo.resid), modelo.model.exog).fit() #squared (or not) residuals
 #modelo_w = sm.OLS(abs(modelo.resid), modelo.model.endog).fit() #squared (or not) residuals
@@ -841,11 +846,10 @@ w = w.max() + w.min() - w
 # w = w/w.max() # normalizing has no effect
 
 
-##########################################
-# plot w vs the response variable
+#######################################################
+# plot w vs the response variable to visualise weights
 
 plt.plot(treino_r[n],w,'ko',ms=0.5)
-
 
 
 #########################
@@ -887,7 +891,7 @@ print('ME:',me,'MAE:',mae,'RMSE:',rmse,'RRSE:',rrse)
 ##############################################################
 # generate index for band combinations with best OOB score
 
-index, table = selectRF_Bands(treino_e[list(range(0,9))],treino_r[n],names_e); varstype = '1'
+index, table = selectRF_Bands(treino_e[list(range(0,9))],treino_r[n],names_e); varstype = '1' # Warning! May take some time.
 
 ###############################################################################
 # generate index for single literature vegetation index with best OOB score
@@ -927,7 +931,7 @@ rrse = rmse/(np.std(teste_r[n])) #*4
 norm = 100*rmse/(np.percentile(teste_r[n],95)-np.percentile(teste_r[n],5))
 r2 = modelo.oob_score_
 label = 'Predicted RF - ' + valtype + '\n'
-printImp(modelo,names_e[index],names_r[n]) #uncomment this to print variable importances
+#printImp(modelo,names_e[index],names_r[n]) #comment / uncomment this to print variable importances
 print(valnamesave)
 print('ME:',me,'MAE:',mae,'RMSE:',rmse,'RRSE:',rrse)
 
@@ -964,8 +968,8 @@ plt.plot(pred, fiter(pred), 'b-', linewidth = 3)
 plt.plot(linha, linha, 'k', linewidth = 2, linestyle = '--')
 
 #save
-#change the directory (string) below to save a figure file
-# plt.savefig('C:/Users/geral/Desktop/'+valnamesave+regtype+names_r[n]+varstype, dpi=300, bbox_inches='tight')
+#change the directory ('C:/...') below to save a figure file
+# plt.savefig('C:/Users/user/Desktop/'+valnamesave+regtype+names_r[n]+varstype, dpi=300, bbox_inches='tight')
 
 
 
@@ -1003,8 +1007,6 @@ plt.bar(['low','mid','high'],[me1,me2,me3])
 ###################
 # OLS diagnostics #
 ###################
-
-# plots:
 
 # normal
 fig, ax = plt.subplots(figsize=(6,2.5))
