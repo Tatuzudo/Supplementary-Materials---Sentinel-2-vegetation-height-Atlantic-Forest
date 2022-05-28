@@ -15,3 +15,5 @@ Data:
 All the data used in the study and the python code to reproduce the results. This doesn't include raw Sentinel 2 or LiDAR data. The python script should work as is, but the paths to the files may have to be edited manually. The script is detailed as much as possible to provide an easy way to reproduce all the results shown in our work. It's recommended to run the script using Spyder ide (Anaconda). All variables can be found at the "Cantareira 1" and "Cantareira 2" folders or the .csv files. All Sentinel 2 images are available for download in https://scihub.copernicus.eu/dhus/#/home. All LiDAR data was kindly provided by the sustainable landscapes project and cannot be obtained without request. For more information, visit the sustainable landscapes project WebGis at https://www.paisagenslidar.cnptia.embrapa.br/webgis/.
 
 To reproduce all results, use the file located at Data/Code.py
+
+[![DOI](https://zenodo.org/badge/373588116.svg)](https://zenodo.org/badge/latestdoi/373588116)
